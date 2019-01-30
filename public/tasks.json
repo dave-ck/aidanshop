@@ -1,0 +1,40 @@
+{
+  "Afternoon": [
+    {
+      "Title": "Vegetables",
+      "Description": "Chop peppers, onions and mushrooms as needed. Label with date.",
+      "Time": 10,
+      "Prerequisites": []
+    },
+    {
+      "Title": "Coffee Machine",
+      "Description": "Wash the coffee machine and capsule dispenser.",
+      "Time": 2,
+      "Prerequisites": []
+    }
+  ],
+  "Evening": [
+    {
+      "Title": "Mop",
+      "Description": "Mop the floor. Add one pump from the wall-mounted detergent dispenser to a bucket 1/3rd full of water.",
+      "Time": 5,
+      "Prerequisites": [
+        "Finish cleanup"
+      ]
+    }
+  ],
+  "AnyShift": [
+    {
+      "Title": "Mop",
+      "Description": "Probe 2 toasties (or reach closing time having made at most 1 toastie).",
+      "Time": 2,
+      "Prerequisites": []
+    },
+    {
+      "Title": "Dishes",
+      "Description": "Remove all clean dishes from the drying rack, ensure the cutlery box is closed. Wash dishes from shift with soap and hot water, leave to dry on rack",
+      "Time": 2,
+      "Prerequisites": []
+    }
+  ]
+}
