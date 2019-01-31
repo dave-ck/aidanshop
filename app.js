@@ -63,6 +63,11 @@ let afternoon = ["veg", "coffee", "probe", "dishes"];
 let evening = ["probe", "dishes", "mop"];
 
 
+app.get('/', function (requ, resp) {
+    resp.send()
+})
+
+
 // authenticate a user
 app.get('/auth', function (requ, resp) {
     let userName = requ.query.userName;
