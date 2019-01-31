@@ -2,7 +2,7 @@
   "name": "njsetest",
   "version": "0.0.0",
   "private": true,
-  "main":"index.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
