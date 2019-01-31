@@ -6,62 +6,71 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 
 let people = {
-        doctorwhocomposer:{
-            surname:"Derbyshire",
-            forename:"Delia",
-            password:"password",    //extremely secure
-            email:"delia.derbyshire@drwhomst.dve"
+    'doctorwhocomposer': {
+        surname: "Derbyshire",
+        forename: "Delia",
+        password: "password",    //extremely secure
+        email: "delia.derbyshire@drwhomst.dve"
 
-        },
-        devman:{
-            surname:"Probably",
-            forename:"Anonymous",
-            password:"also_password",    //even more secure
-            email:"devck@protonmail.com"
-        }
-    };
+    },
+    'devman': {
+        surname: "Probably",
+        forename: "Anonymous",
+        password: "also_password",    //even more secure
+        email: "devck@protonmail.com"
+    }
+};
 let taskDescriptions = {
-        veg:{
-            Tag: 'veg',
-            Title: 'Vegetables',
-            Description: 'Chop peppers, onions and mushrooms as needed. Label with date.',
-            Time: 10,
-            Prerequisites: []
-        },
-        coffee:{
-            Tag: 'coffee',
-            Title: 'Coffee Machine',
-            Description: 'Wash the coffee machine and capsule dispenser.',
-            Time: 2,
-            Prerequisites: []
-        },
-        mop:{
-            Tag: 'mop',
-            Title: 'Mop',
-            Description: 'Mop the floor. Add one pump from the wall-mounted detergent dispenser to a bucket 1/3rd full of water.',
-            Time: 5,
-            Prerequisites: ["dishes"]
-        },
-        probe:{
-            Tag: 'probe',
-            Title: 'Probe Toasties',
-            Description: 'Probe 2 toasties (or reach closing time having made at most 1 toastie).',
-            Time: 2,
-            Prerequisites: []
-        },
-        dishes:{
-            Tag: 'dishes',
-            Title: 'Dishes',
-            Description: 'Remove all clean dishes from the drying rack, ensure the cutlery box is closed. Wash dishes from shift with soap and hot water, leave to dry on rack',
-            Time: 2,
-            Prerequisites: []
-        }
+    veg: {
+        Tag: 'veg',
+        Title: 'Vegetables',
+        Description: 'Chop peppers, onions and mushrooms as needed. Label with date.',
+        Time: 10,
+        Prerequisites: []
+    },
+    coffee: {
+        Tag: 'coffee',
+        Title: 'Coffee Machine',
+        Description: 'Wash the coffee machine and capsule dispenser.',
+        Time: 2,
+        Prerequisites: []
+    },
+    mop: {
+        Tag: 'mop',
+        Title: 'Mop',
+        Description: 'Mop the floor. Add one pump from the wall-mounted detergent dispenser to a bucket 1/3rd full of water.',
+        Time: 5,
+        Prerequisites: ["dishes"]
+    },
+    probe: {
+        Tag: 'probe',
+        Title: 'Probe Toasties',
+        Description: 'Probe 2 toasties (or reach closing time having made at most 1 toastie).',
+        Time: 2,
+        Prerequisites: []
+    },
+    dishes: {
+        Tag: 'dishes',
+        Title: 'Dishes',
+        Description: 'Remove all clean dishes from the drying rack, ensure the cutlery box is closed. Wash dishes from shift with soap and hot water, leave to dry on rack',
+        Time: 2,
+        Prerequisites: []
+    }
 };
 let tasks = ["veg", "coffee", "probe", "dishes", "mop"];
 let afternoon = ["veg", "coffee", "probe", "dishes"];
 let evening = ["probe", "dishes", "mop"];
 
+function redact(username) {
+    let person = people[username];
+    let redactedPerson = {
+        surname: person.surname,
+        forename: person.forename
+    };
+    return redactedPerson;
 
+
+}
 
 
 app.get('/test', function (req, res) {
@@ -75,14 +84,12 @@ app.get('/auth', function (requ, resp) {
     console.log("Login attempted:");
     console.log(userName);
     console.log(password);
-    if (people[userName]===undefined){
+    if (people[userName] === undefined) {
         resp.send(false);
-    }
-    else if (people[userName]['password']===password){
+    } else if (people[userName]['password'] === password) {
         //console.log("Verified.");
         resp.send(true);
-    }
-    else {
+    } else {
         //console.log("Phony password/uname pair");
         resp.send(false);
     }
@@ -109,14 +116,26 @@ app.get('/evening', function (request, response) {
 });
 
 app.get('/people/:username', function (request, response) {
-    console.log("People GET called. Username: ");
-    console.log(request.params.username);
-    response.send(names)
+    let username = request.params.username;
+    response.send(redact(username));
 });
 
+app.get('/people/', function (request, response) {
+    let username = request.params.username;
+    // strip out passwords and emails - sensitive data
+    let redactedPeople = {};
+    Object.keys(people).map(function (username) {
+        redactedPeople[username] = redact(username);
+    });
+    response.send(redactedPeople);
+});
 
+// bodge, not fully implemented
 app.post('/people', function (requ, resp) {
-   resp.send(403); 
+    if(requ.body.access_token==="concertina"){
+        resp.send(400);
+    }
+    resp.send(403);
 });
 
 
