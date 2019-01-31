@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const fs = require("fs");
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -63,10 +62,11 @@ let afternoon = ["veg", "coffee", "probe", "dishes"];
 let evening = ["probe", "dishes", "mop"];
 
 
-app.get('/', function (requ, resp) {
-    resp.send()
-})
 
+
+app.get('/test', function (req, res) {
+    res.send("32");
+});
 
 // authenticate a user
 app.get('/auth', function (requ, resp) {
@@ -75,10 +75,10 @@ app.get('/auth', function (requ, resp) {
     console.log("Login attempted:");
     console.log(userName);
     console.log(password);
-    if (people[userName]==undefined){
+    if (people[userName]===undefined){
         resp.send(false);
     }
-    else if (people[userName]['password']==password){
+    else if (people[userName]['password']===password){
         //console.log("Verified.");
         resp.send(true);
     }
@@ -92,16 +92,32 @@ app.get('/afternoon', function (request, response) {
     let afternoonTasks = [];
     tasks.forEach(function (taskName) {
         if (afternoon.includes(taskName)) afternoonTasks.push(taskDescriptions[taskName]);
-    })
+    });
     let responseJSON = JSON.stringify(afternoonTasks);
     response.send(responseJSON);
     console.log(responseJSON);
 });
 
+app.get('/evening', function (request, response) {
+    let eveningTasks = [];
+    tasks.forEach(function (taskName) {
+        if (evening.includes(taskName)) eveningTasks.push(taskDescriptions[taskName]);
+    })
+    let responseJSON = JSON.stringify(eveningTasks);
+    response.send(responseJSON);
+    console.log(responseJSON);
+});
+
 app.get('/people/:username', function (request, response) {
-    console.log("People GET called. Username: ")
+    console.log("People GET called. Username: ");
     console.log(request.params.username);
     response.send(names)
 });
+
+
+app.post('/people', function (requ, resp) {
+   resp.send(403); 
+});
+
 
 module.exports = app;
