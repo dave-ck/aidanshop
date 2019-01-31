@@ -1,4 +1,4 @@
 "use strict";
-const app = require("./app.js")
-
-app.listen(80);
+const app = require("./app.js");
+const port = process.env.PORT || 8080;
+app.listen(port);
