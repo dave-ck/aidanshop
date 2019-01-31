@@ -1,4 +1,5 @@
 let loggedInAs = null;
+let access_token = "";
 $('#failedLoginText').hide();
 $('#failedAddPeople').hide();
 
@@ -41,8 +42,7 @@ function updateTasks(pillDiv, contentDiv, taskList) {
         let task = taskList[i];
         let taskName = task.Title;
         let pill = `<li><a id="afternoonPill${i}" data-toggle=\"tab\" href=\"#afternoon${i}\"> Item: ${taskName} </a></li>`;
-        let taskDiv = `<h4>${taskName}</h4>
-                       <p>${task.Description}</p>`;
+        let taskDiv = `<h4>${taskName}</h4><p>${task.Description}</p>`;
         let content = `<div id=\"afternoon${i}\" class=\"tab-pane fade\">${taskDiv}</div>`;
         pillHTML += pill;
         contentHTML += content;

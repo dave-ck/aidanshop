@@ -27,13 +27,46 @@ function serialise(obj) {
     return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
 }
 
-describe('Test the ability to run test file', () => {
+describe('Verify test file is running', () => {
     test('Test case is capable of accepting', () => {
         expect(2).toEqual(2);
+    });
+    test('Test case is capable of rejecting', () => {
+        return request(app)
+            .get('/test')
+            .expect(0);
     });
     test('Test capable of accepting function called on app', () => {
         return request(app)
             .get('/test')
+            .expect(200);
+    });
+});
+
+describe('Test task service', () => {
+    test('POST /done needs access_token', () => {
+        return request(app)
+            .post('/done')
+            .expect(403);
+    });
+    test('POST /done rejects on non-existing taskTag', () => {
+        const params = {
+            access_token: 'concertina',
+            task: 'fixDishwasher'
+        };
+        return request(app)
+            .post('/done')
+            .send(serialise(params))
+            .expect(400);
+    });
+    test('POST /done accepts', () => {
+        const params = {
+            access_token: 'concertina',
+            task: 'dishes'
+        };
+        return request(app)
+            .post('/done')
+            .send(serialise(params))
             .expect(200);
     });
 });
