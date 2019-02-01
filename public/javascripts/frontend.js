@@ -10,20 +10,9 @@ function serialise(obj) {
     return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
 }
 
-function updateNames(names) {
-    let nameList = "<ul>";
-    let fLen = names.length;
-    for (i = 0; i < fLen; i++) {
-        nameList += "<li>" + names[i] + "</li>";
-    }
-    nameList += "</ul>";
-    $('#namesSpan').html(nameList);
-}
-
 function afternoon() {
     $.get("./afternoon", function (jsonTaskList) {
         let taskList = JSON.parse(jsonTaskList);
-        console.log(taskList);
         updateTasks($('#afternoonPills'), $('#afternoonContents'), taskList, "afternoon");
     });
 }
@@ -55,22 +44,25 @@ function updateTasks(pillDiv, contentDiv, taskList, afteve) {
     for (i = 0; i < listLen; i++) {
         let task = taskList[i];
         let taskName = task.Title;
-        let pill = `<li><a id="${afteve}Pill${i}" data-toggle=\"tab\" href=\"#${afteve}${i}\"> Item: ${taskName} </a></li>`;
         let lastDone = new Date(task.LastDone);
         let timeDelta = now - lastDone;
         let daysDelta = timeDelta / (1000 * 60 * 60 * 24);
         let btnStyle = "btn-success";
+        let pillStyle = ""; //no special styling if done
         let urgencyCaption = "Task has been done.";
         if (daysDelta > 0.2) {
             btnStyle = "btn-warning";
             urgencyCaption = "Not yet done this shift."
+            pillStyle = "bg-warning";
         }
         if (daysDelta > task.Time) {
             btnStyle = "btn-danger";
+            pillStyle = "bg-danger";
             urgencyCaption = "Task must be done this shift."
         }
         let taskDiv = `<h4>${taskName}</h4><p>${task.Description}</p><p>${urgencyCaption}</p><button id="${afteve + i}Done" type="button" class="btn ${btnStyle}">Done!</button>`;
-        let content = `<div id=\"${afteve}${i}\" class=\"tab-pane fade\">${taskDiv}</div>`;
+        let content = `<div id=\"${afteve+i}\" class=\"tab-pane fade\">${taskDiv}</div>`;
+        let pill = `<li><a id="${afteve}Pill${i}" data-toggle=\"tab\" href=\"#${afteve}${i}\" class="${pillStyle}"> ${taskName} </a></li>`;
         pillHTML += pill;
         contentHTML += content;
     }
@@ -90,12 +82,14 @@ function updateTasks(pillDiv, contentDiv, taskList, afteve) {
                 button.classList.remove("btn-warning", "btn-danger");
                 console.log("Task accepted as done:" + status);
             });
-
+            afternoon();
+            evening();
+            $(`#${afteve+i}`).show();
         });
+
         console.log("Button linked: " + i);
     }
 }
-
 
 function peopleTable(people) {
     let tableHTML = "";
@@ -120,7 +114,19 @@ function taskTable(tasks) {
     $('#taskTableBody').html(tableHTML);
 }
 
+function refreshAccountsTable(){
+    $.get("./people", serialise({access_token: access_token}), function (people) {
+        console.log(people);
+        peopleTable(people);
+    });
+}
 
+function refreshTasksTable(){
+    $.get("./tasks", function (tasks) {
+        console.log(tasks);
+        taskTable(JSON.parse(tasks));
+    });
+}
 
 $('#afternoonLink').on('click', afternoon);
 $('#eveningLink').on('click', evening);
@@ -138,6 +144,7 @@ $('#deleteAccountForm').on('submit', function (formOut) {
     }), function (status) {
         console.log("Remove person status: " + status);
     });
+    refreshAccountsTable();
     return false;
 });
 
@@ -151,9 +158,9 @@ $('#deleteTaskForm').on('submit', function (formOut) {
     }), function (status) {
         console.log("Remove task status: " + status);
     });
+    refreshTasksTable();
     return false;
 });
-
 
 $('#loginForm').on('submit', function (formOut) {
     formOut.preventDefault();
@@ -197,6 +204,7 @@ $('#createAccount').on('submit', function (formOut) {
     }), function (status) {
         console.log("Add person status:" + status);
     });
+    refreshAccountsTable();
 });
 
 $('#addTask').on('submit', function (formOut) {
@@ -219,19 +227,10 @@ $('#addTask').on('submit', function (formOut) {
     }), function (status) {
         console.log("Add task status:" + status);
     });
+    refreshTasksTable();
     return false;
 });
 
-$('#manageAccountsPill').on('click', function () {
-    $.get("./people", serialise({access_token: access_token}), function (people) {
-        console.log(people);
-        peopleTable(people);
-    });
-});
+$('#manageAccountsPill').on('click', refreshAccountsTable);
 
-$('#manageTasksPill').on('click', function () {
-    $.get("./tasks", function (tasks) {
-        console.log(tasks);
-        taskTable(JSON.parse(tasks));
-    });
-});
+$('#manageTasksPill').on('click', refreshTasksTable);

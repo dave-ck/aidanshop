@@ -3,6 +3,16 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.pill-warning{
+ background-color:dark;
+}
+
+.pill-danger{
+  background-color:red;
+  color: white;
+
+}
+
 a {
   color: #00B7FF;
 }
