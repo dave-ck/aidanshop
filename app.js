@@ -75,16 +75,13 @@ let taskDescriptions = {
         LastDone: "2019-01-29T12:00:00.000Z"
     }
 };
-let tasks = ["veg", "coffee", "probe", "dishes", "mop"];
-let afternoon = ["veg", "coffee", "probe", "dishes"];
-let evening = ["probe", "dishes", "mop"];
+let tasks = ["veg", "coffee", "probe", "dishes", "mop", "microwave", "counter"];
+let afternoon = ["veg", "coffee", "probe", "dishes", "microwave", "counter"];
+let evening = ["probe", "dishes", "mop", "counter", "microwave"];
 
 function redact(username) {
     let person = people[username];
-    return {
-        surname: person.surname,
-        forename: person.forename
-    };
+    return {surname: person.surname, forename: person.forename};
 
 
 }
@@ -99,9 +96,6 @@ app.get('/test', function (req, res) {
 app.get('/auth', function (requ, resp) {
     let userName = requ.query.userName;
     let password = requ.query.password;
-    console.log("Login attempted:");
-    console.log(userName);
-    console.log(password);
     if (people[userName] === undefined) {
         resp.send(false);
     } else if (people[userName]['password'] === password) {
@@ -129,7 +123,6 @@ app.get('/evening', function (request, response) {
     });
     let responseJSON = JSON.stringify(eveningTasks);
     response.send(responseJSON);
-    console.log(responseJSON);
 });
 
 app.get('/people/:username', function (request, response) {
@@ -138,7 +131,6 @@ app.get('/people/:username', function (request, response) {
 });
 
 app.get('/people/', function (requ, resp) {
-    console.log(requ.query.access_token);
     if (admin_tokens.includes(requ.query.access_token)) {
         resp.send(people);
     } else {
@@ -151,11 +143,34 @@ app.get('/people/', function (requ, resp) {
     }
 });
 
+app.get('/tasks', function (request, response) {
+    response.send(JSON.stringify(tasks));
+});
+
+app.post('/removePeople', function (requ, resp) {
+    console.log("removePeople POST called");
+    if (admin_tokens.includes(requ.body.access_token)) {
+        let username = requ.body.username;
+        if (username) {
+            if (Object.keys(people).includes(username)) {
+                //delete user from set of people
+                delete people[username];
+                resp.sendStatus(200);
+                console.log("Successfully removed user: " + username);
+
+            } else {
+                console.log("Username provided didn't exist in people:" + username);
+                resp.sendStatus(400);
+            }
+        }
+    } else {
+        console.log("invalid auth token");
+        resp.sendStatus(403);
+    }
+});
+
 app.post('/people', function (requ, resp) {
     console.log("People POST called");
-    console.log(requ.body);
-    console.log(requ);
-    console.log(requ.body.access_token);
     if (admin_tokens.includes(requ.body.access_token)) {
         let forename = requ.body.forename;
         let surname = requ.body.surname;
@@ -185,20 +200,57 @@ app.post('/people', function (requ, resp) {
     }
 });
 
+app.post('/task', function (requ, resp) {
+    console.log("Task POST called");
+    if (admin_tokens.includes(requ.body.access_token)) {
+        let taskTag = requ.body.Tag;
+        let taskTitle = requ.body.Title;
+        let taskDescription = requ.body.Description;
+        let taskTime = requ.body.Time;
+        let afternoonBool = requ.body.Afternoon;
+        let eveningBool = requ.body.Evening;
+        console.log("Add task: " + taskTag);
+        if (taskTag && taskTitle && taskDescription && taskTime) {
+            if (Object.keys(taskDescription).includes(taskTag)) {
+                //duplicate tag not allowed
+                resp.sendStatus(400);
+                console.log("Rejected duplicate task tag");
+            } else {
+                taskDescriptions[taskTag] = {
+                    Tag: taskTag,
+                    Title: taskTitle,
+                    Description: taskDescription,
+                    Time: taskTime,
+                    LastDone: "2000-01-30T12:00:00.000Z"
+                };
+                tasks.push(taskTag);
+                if (afternoonBool){
+                    afternoon.push(taskTag);
+                }
+                if (eveningBool){
+                    evening.push(taskTag);
+                }
+                console.log("Successfully added task:" + taskTag);
+                resp.sendStatus(200);
+            }
+        }
+    } else {
+        console.log("invalid auth token");
+        resp.sendStatus(403);
+    }
+    console.log("Task POST handled.")
+});
+
 app.post('/done', function (requ, resp) {
-    console.log("Done called");
     if (staff_tokens.includes(requ.body.access_token)) {
         let taskTag = requ.body.task;
         if (taskTag in taskDescriptions) {
             taskDescriptions[taskTag].LastDone = new Date();
             resp.send(200);
-            console.log("Accepted task as done.")
         } else {
-            console.log("Invalid tag received");
             resp.send(400);
         }
     } else {
-        console.log("Unauthorized auth token");
         resp.send(403);
     }
 });

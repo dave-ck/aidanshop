@@ -112,8 +112,22 @@ function peopleTable(people) {
 
 $('#afternoonLink').on('click', afternoon);
 $('#eveningLink').on('click', evening);
-
-// logging in
+$('#deleteAccountForm').on('submit', function (formOut) {
+    formOut.preventDefault();
+    let username = this.elements[0].value;
+    console.log("Deleting: " + username);
+    if (username === loggedInAs) {
+        alert("You can't delete the account you are currently logged in as!");
+        return false;
+    }
+    $.post("./removePeople", serialise({
+        access_token: access_token,
+        username: username
+    }), function (status) {
+        console.log("Remove person status: " + status);
+    });
+    return false;
+});
 $('#loginForm').on('submit', function (formOut) {
     formOut.preventDefault();
     $('.loggedOut').hide();
@@ -147,14 +161,6 @@ $('#createAccount').on('submit', function (formOut) {
     let forename = this.elements[3].value;
     let surname = this.elements[4].value;
     let email = this.elements[5].value;
-    console.log(serialise({
-        access_token: access_token,
-        username: username,
-        forename: forename,
-        surname: surname,
-        email: email,
-        password: password
-    }));
     $.post("./people", serialise({
         access_token: access_token,
         username: username,
@@ -167,7 +173,30 @@ $('#createAccount').on('submit', function (formOut) {
     });
 });
 
-$('#removeAccountPill').on('click', function () {
+$('#addTask').on('submit', function (formOut) {
+    formOut.preventDefault();
+    let taskTag = this.elements[0].value;
+    let taskName = this.elements[1].value;
+    let taskDescription = this.elements[2].value;
+    let taskTime = this.elements[3].value;
+    console.log(taskTag);
+    let afternoon = true;
+    let evening = true;
+    $.post("./task", serialise({
+        access_token: access_token,
+        Tag: taskTag,
+        Title: taskName,
+        Description: taskDescription,
+        Time: taskTime,
+        Afternoon: afternoon,
+        Evening: evening
+    }), function (status) {
+        console.log("Add task status:" + status);
+    });
+    return false;
+});
+
+$('#manageAccountsPill').on('click', function () {
     $.get("./people", serialise({access_token: access_token}), function (people) {
         console.log(people);
         peopleTable(people);

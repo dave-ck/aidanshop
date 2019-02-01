@@ -88,7 +88,7 @@
             <nav class="col-sm-3">
                 <ul id="adminPills" class="nav nav-pills nav-stacked">
                     <li><a id="newAccountPill" data-toggle="tab" href="#newAccountDiv"> Create a new account </a></li>
-                    <li><a id="removeAccountPill" data-toggle="tab" href="#deleteAccountDiv"> Delete an existing
+                    <li><a id="manageAccountsPill" data-toggle="tab" href="#manageAccountsDiv"> Delete an existing
                         account </a></li>
                     <li><a id="manageTasksPill" data-toggle="tab" href="#manageTasksDiv"> Manage tasks </a></li>
                 </ul>
@@ -122,7 +122,7 @@
                         error message. Please try again.</p>
 
                 </div>
-                <div id="deleteAccountDiv" class="tab-pane">
+                <div id="manageAccountsDiv" class="tab-pane">
                     <div id="existingAccounts">
                         <table class="table">
                             <thead>
@@ -139,7 +139,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <form id="deleteAccount">
+                    <form id="deleteAccountForm">
                         <div class="form-group">
                             <label for="delUser_username">Username to be deleted from database: </label>
                             <input type="text" class="form-control" id="delUser_username" value="">
@@ -161,7 +161,7 @@
                             <textarea class="form-control" id="addTask_taskDescription" name="Text1" cols="40" rows="5"></textarea>
                             <br>
                             <label for="addTask_taskTime">Frequency with which the task must be done (in
-                                days): </label>
+                                days - 0.2 if once per shift): </label>
                             <input type="number" class="form-control" id="addTask_taskTime" value="">
                             <br>
                             <button type="submit" class="btn btn-default">Submit</button>
