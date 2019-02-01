@@ -144,7 +144,7 @@ app.get('/people/', function (requ, resp) {
 });
 
 app.get('/tasks', function (request, response) {
-    response.send(JSON.stringify(tasks));
+    response.send(JSON.stringify(taskDescriptions));
 });
 
 app.post('/removePeople', function (requ, resp) {
@@ -163,6 +163,27 @@ app.post('/removePeople', function (requ, resp) {
                 resp.sendStatus(400);
             }
         }
+    } else {
+        console.log("invalid auth token");
+        resp.sendStatus(403);
+    }
+});
+
+app.post('/removeTask', function (requ, resp) {
+    console.log("removeTask POST called");
+    if (admin_tokens.includes(requ.body.access_token)) {
+        let taskTag = requ.body.Tag;
+        if (taskTag) {
+            delete taskDescriptions[taskTag];
+            // ujeenator https://stackoverflow.com/questions/5767325/how-do-i-remove-a-particular-element-from-an-array-in-javascript
+            afternoon = afternoon.filter(item => item !== taskTag);
+            evening = evening.filter(item => item !== taskTag);
+            tasks = tasks.filter(item => item !== taskTag);
+            resp.sendStatus(200);
+            console.log("Successfully removed task: " + taskTag);
+        }
+        console.log("Issue raised:");
+        console.log(requ.body);
     } else {
         console.log("invalid auth token");
         resp.sendStatus(403);

@@ -109,6 +109,18 @@ function peopleTable(people) {
     $('#userTableBody').html(tableHTML);
 }
 
+function taskTable(tasks) {
+    let tableHTML = "";
+    Object.keys(tasks).forEach(function (taskTag) {
+        let taskTitle = tasks[taskTag].Title;
+        let taskDescription = tasks[taskTag].Description;
+        let taskFrequency = tasks[taskTag].Time;
+        tableHTML += `<tr><td>${taskTag}</td><td>${taskTitle}</td><td>${taskDescription}</td><td>${taskFrequency}</td></tr>`;
+    });
+    $('#taskTableBody').html(tableHTML);
+}
+
+
 
 $('#afternoonLink').on('click', afternoon);
 $('#eveningLink').on('click', evening);
@@ -128,6 +140,21 @@ $('#deleteAccountForm').on('submit', function (formOut) {
     });
     return false;
 });
+
+$('#deleteTaskForm').on('submit', function (formOut) {
+    formOut.preventDefault();
+    let taskTag = this.elements[0].value;
+    console.log("Deleting: " + taskTag);
+    $.post("./removeTask", serialise({
+        access_token: access_token,
+        Tag: taskTag
+    }), function (status) {
+        console.log("Remove task status: " + status);
+    });
+    return false;
+});
+
+
 $('#loginForm').on('submit', function (formOut) {
     formOut.preventDefault();
     $('.loggedOut').hide();
@@ -148,7 +175,6 @@ $('#loginForm').on('submit', function (formOut) {
             }
             refreshLoggedIn(loggedInAs);
         });
-    $('#loginLink').removeAttribute("aria-expanded");
     return false;
 });
 
@@ -200,5 +226,12 @@ $('#manageAccountsPill').on('click', function () {
     $.get("./people", serialise({access_token: access_token}), function (people) {
         console.log(people);
         peopleTable(people);
+    });
+});
+
+$('#manageTasksPill').on('click', function () {
+    $.get("./tasks", function (tasks) {
+        console.log(tasks);
+        taskTable(JSON.parse(tasks));
     });
 });
