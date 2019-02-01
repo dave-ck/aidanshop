@@ -83,20 +83,25 @@
             <h3>Admin options</h3>
             <p class="loggedOut" style="color:red">You are not logged in. Please log in as an administrator and try
                 again.</p>
+            <p class="regularStaff" style="color:red">You are logged in, but not an administrator. You may view user and task information but not modify it.</p>
+
         </div>
         <div class="row loggedIn">
             <nav class="col-sm-3">
                 <ul id="adminPills" class="nav nav-pills nav-stacked">
-                    <li><a id="newAccountPill" data-toggle="tab" href="#newAccountDiv"> Create a new account </a></li>
-                    <li><a id="manageAccountsPill" data-toggle="tab" href="#manageAccountsDiv"> View or delete existing
+                    <li class="admin"><a id="newAccountPill" data-toggle="tab" href="#newAccountDiv"> Create a new account </a></li>
+                    <li class="admin"><a id="manageAccountsPill" data-toggle="tab" href="#manageAccountsDiv"> View or delete existing
                         accounts </a></li>
-                    <li><a id="addTaskPill" data-toggle="tab" href="#addTaskDiv"> Add a task </a></li>
-                    <li><a id="manageTasksPill" data-toggle="tab" href="#manageTasksDiv"> View or delete existing tasks </a></li>
+                    <li class="regularStaff"><a id="viewAccountsPill" data-toggle="tab" href="#manageAccountsDiv"> View existing
+                        accounts </a></li>
+                    <li class="admin"><a id="addTaskPill" data-toggle="tab" href="#addTaskDiv"> Add a task </a></li>
+                    <li class="admin"><a id="manageTasksPill" data-toggle="tab" href="#manageTasksDiv"> View or delete existing tasks </a></li>
+                    <li class="regularStaff"><a id="viewTasksPill" data-toggle="tab" href="#manageTasksDiv"> View existing tasks </a></li>
                 </ul>
             </nav>
             <div id="adminContents" class="tab-content col-sm-9">
                 <div id="newAccountDiv" class="tab-pane">
-                    <form id="createAccount">
+                    <form id="createAccount" class="admin">
                         <div class="form-group">
                             <label for="addUser_username">Username:</label>
                             <input type="text" class="form-control" id="addUser_username" value="">
@@ -140,7 +145,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <form id="deleteAccountForm">
+                    <form id="deleteAccountForm" class="admin">
                         <div class="form-group">
                             <label for="delUser_username">Username to be deleted from database: </label>
                             <input type="text" class="form-control" id="delUser_username" value="">
@@ -150,7 +155,7 @@
                     </form>
                 </div>
                 <div id="addTaskDiv" class="tab-pane">
-                    <form id="addTask">
+                    <form id="addTask" class="admin">
                         <div class="form-group">
                             <label for="addTask_taskID">Task tag: </label>
                             <input type="text" class="form-control" id="addTask_taskID" value="">
@@ -185,7 +190,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <form id="deleteTaskForm">
+                    <form id="deleteTaskForm" class="admin">
                         <div class="form-group">
                             <label for="delTask_tag">Task tag (ID) to delete from database: </label>
                             <input type="text" class="form-control" id="delTask_tag" value="">

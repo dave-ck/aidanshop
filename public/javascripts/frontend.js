@@ -1,8 +1,13 @@
 let loggedInAs = null;
 let access_token = "";
+let permissions = "guest";
+
 $('#failedLoginText').hide();
 $('#failedAddPeople').hide();
 $('.loggedIn').hide();
+$('.admin').hide();
+$('.regularStaff').hide();
+
 
 // thanks to Nico Tejera at https://stackoverflow.com/questions/1714786/query-string-encoding-of-a-javascript-object
 // returns something like "access_token=concertina&username=bobthebuilder"
@@ -28,7 +33,7 @@ function refreshLoggedIn(uName) {
     // log in button
     let text = " Log in";
     let classes = "glyphicon glyphicon-log-in";
-    if (uName != null) {
+    if (uName) {
         text = " " + loggedInAs;
         classes = "glyphicon glyphicon-user";
     }
@@ -39,7 +44,6 @@ function updateTasks(pillDiv, contentDiv, taskList, afteve) {
     let pillHTML = "";
     let contentHTML = "";
     let listLen = taskList.length;
-    console.log(taskList[0]);
     let now = new Date();
     for (i = 0; i < listLen; i++) {
         let task = taskList[i];
@@ -52,7 +56,7 @@ function updateTasks(pillDiv, contentDiv, taskList, afteve) {
         let urgencyCaption = "Task has been done.";
         if (daysDelta > 0.2) {
             btnStyle = "btn-warning";
-            urgencyCaption = "Not yet done this shift."
+            urgencyCaption = "Not yet done this shift.";
             pillStyle = "bg-warning";
         }
         if (daysDelta > task.Time) {
@@ -76,8 +80,6 @@ function updateTasks(pillDiv, contentDiv, taskList, afteve) {
                 access_token: access_token,
                 task: task.Tag
             }), function (status) {
-                console.log(typeof this);
-                console.log(this);
                 button.classList.add("btn-success");
                 button.classList.remove("btn-warning", "btn-danger");
                 console.log("Task accepted as done:" + status);
@@ -115,6 +117,7 @@ function taskTable(tasks) {
 }
 
 function refreshAccountsTable(){
+    console.log("Fetching people with access token: "+ access_token);
     $.get("./people", serialise({access_token: access_token}), function (people) {
         console.log(people);
         peopleTable(people);
@@ -164,22 +167,33 @@ $('#deleteTaskForm').on('submit', function (formOut) {
 
 $('#loginForm').on('submit', function (formOut) {
     formOut.preventDefault();
-    $('.loggedOut').hide();
-    $('.loggedIn').show();
-
     let username = this.elements[0].value;
     let password = this.elements[1].value;
     $.get("./auth", "userName=" + username + "&password=" + password,
         function (authenticated) {
+            $('.loggedOut').show();
+            $('.loggedIn').hide();
+            $('.admin').hide();
+            $('.regularStaff').hide();
             if (authenticated) {
+                $('.loggedOut').hide();
+                $('.loggedIn').show();
                 loggedInAs = username;
                 access_token = authenticated;
                 console.log("Access token granted: " + access_token);
+                if (access_token.includes("concertina")){
+                    $('.admin').show();
+                }
+                else $('.regularStaff').show();
                 $('#failedLoginText').hide();
             } else {
-                console.log("Failed to log in");
+                console.log("Failed to log in.");
+                loggedInAs = null;
+                access_token = "";
                 $('#failedLoginText').show();
             }
+            refreshAccountsTable();
+            refreshTasksTable();
             refreshLoggedIn(loggedInAs);
         });
     return false;
@@ -234,3 +248,8 @@ $('#addTask').on('submit', function (formOut) {
 $('#manageAccountsPill').on('click', refreshAccountsTable);
 
 $('#manageTasksPill').on('click', refreshTasksTable);
+
+$('#viewTasksPill').on('click', refreshTasksTable);
+
+$('#viewAccountsPill').on('click', refreshAccountsTable);
+

@@ -18,11 +18,11 @@ let people = {
         forename: "Anonymous",
         password: "also_password",    //even more secure
         email: "devck@protonmail.com",
-        access_token: "superSecur3"
+        access_token: "concertina1298"
     }
 };
-let staff_tokens = ["toasteeWhomstdve", "concertina", "superSecur3"];
-let admin_tokens = ["concertina", "superSecur3"];
+let staff_tokens = ["toasteeWhomstdve", "concertina", "concertina1298"];
+let admin_tokens = ["concertina", "concertina1298"];
 
 let taskDescriptions = {
     veg: {
@@ -131,6 +131,7 @@ app.get('/people/:username', function (request, response) {
 });
 
 app.get('/people/', function (requ, resp) {
+    console.log(requ.query.access_token);
     if (admin_tokens.includes(requ.query.access_token)) {
         resp.send(people);
     } else {
