@@ -210,7 +210,8 @@ app.post('/people', function (requ, resp) {
                     forename: forename,
                     surname: surname,
                     email: email,
-                    password: password
+                    password: password,
+                    access_token: "toasteeWhomstdve"
                 };
                 console.log("Successfully added person:" + people[username]);
                 resp.sendStatus(200);
